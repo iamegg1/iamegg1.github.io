@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  
+  <meta name="google" value="notranslate">
+  <title></title>
+  <link rel="stylesheet" href="style.css">
+  <script src="/storage.js"></script>
+  <script src="js/blockly_compressed.js"></script>
+  <script src="js/blocks_compressed.js"></script>
+  <script src="js/python_compressed.js"></script>
+  <script src="js/code.js"></script>
+  <script src="js/term.js"></script>
+  <script src="js/FileSaver.js"></script>
+  <script src="js/blockly_save.js"></script>
+  <script src="js/moment.js"></script>
+  <script src="js/Chart.min.js"></script>
+  
+</head>
+<body>
+<!--<body style="background-color:orange;">-->
+  <div id="blocklyDiv"></div>
+  <table width="100%" height="100%">
+    <tr>
+      <td>
+        <h1>
+          <span id="title" hidden='ture'>Micropython</span>
+        </h1>
+		
+		<!--drop menu-->
+		<div class="dropdown">
+			<div class="container" onclick="myFunction(this)">
+				<div class="bar1"></div>
+				<div class="bar2"></div>
+				<div class="bar3"></div>
+			</div>
+			<div id="myDropdown"class="dropdown-content">
+				<a class='hwr' href="#" title='upload blockly code to device' id="dirsend" onclick="send_py();setTimeout(put_file, 1000);setTimeout(restart1, 5000);">upload(workspace)</a>
+				<a href="#" onclick='tooggle_termback();'>Terminal</a>
+				<a href="#" title="Save entire project to XML" onclick="save()">Save XML</a>
+				<a href="#" title="import previous XML file" onclick="document.getElementById('importXML').click()">import XML</a>
+				<a href="#" id="put-file-select77" class="notext primary" title="Select a file"onclick="document.getElementById('put-file-select').click();" >import excess py</a>
+				<a href="#" id="test" title='Get file from workspace'class="notext primary" title="get code" onclick="saveCodePy();">Get file(WS)</a>
+				<a href="#" title="get file from device" onclick="get_file_namme()">Get file(D)</a>
+				<a href="#" title="send file" onclick="put_file()">Send lib</a>
+				<a href="#" onclick="alert('hihi')">Link 1</a>
+				<a href="#">Link 2</a>
+				<a href="#">Link 3</a>
+			<button>click me</button>
+			</div>
+		</div>
+		<p>hihi</p>
+		<br style=' line-height: 20%;'>
+		<form>
+			<input type="text" name="webrepl_url" id="url" value="ws://192.168.4.1:8266/" />
+			<input type="password" name="webrepl_pw" id="web_pw" value="123456" />
+			<input type="submit" id="button" value="Connect" onclick="button_click(); return false;" />
+			<div class='taboff' style='background-color:red;display: inline-block;'id='con_status'>disconnected</div>
+		</form>
+      </td>
+      <td class="farSide">
+        <select id="languageMenu"></select>
+		<br></br>
+		<span style="background-color:transparent;"class='file-box'id="put-file-list"></span>
+		<div id="file-status"><span style="color:#707070;float:right;">(file operation status)</span></div>
+      </td>
+    </tr>
+	
+    <tr>
+      <td colspan=2>
+        <table width="100%">
+          <tr id="tabRow" height="1em">
+            <td id="tab_blocks" class="tabon" >...</td>
+            <td class="tabmin">&nbsp;</td>
+            <!--<td id="tab_javascript" class="taboff">JavaScript</td>
+            <td class="tabmin">&nbsp;</td>-->
+            <!--<td id="tab_python" class="taboff"style="background-color:#1565C0;"><font color='yellow'>Python</font></td>-->
+			<td id="tab_python" class="taboff">Python</td>
+            <!--<td class="tabmin">&nbsp;</td>
+            <td id="tab_lua" class="taboff">Lua</td>-->
+            <td class="tabmin">&nbsp;</td>
+            <td id="tab_xml" class="taboff" style="background-color:white;">XML</td>
+            <td class="tabmax">
+			  <button style="font-size : 18px;" class="notext primary" title='upload blockly code to device' id="dirsend" onclick="send_py();setTimeout(put_file, 1000);setTimeout(restart1, 5000);">upload(workspace)</button>
+              <button style="font-size : 18px;" class="notext primary"onclick="restart1()">Restart device</button>
+			  <button id="trashButton" class="notext" title="...">
+                <img src='media/1x1.gif' class="trash icon21">
+              </button>
+              <button id="linkButton" class="notext" title="...">
+                <img src='media/1x1.gif' class="link icon21">
+              </button>
+			  <!--<button id="put-file-button" onclick="put_file(); return false;" class="notext primary" title="Run the program defined by the blocks in the workspace."></button>-->
+			  <button hidden='ture' id="put-file-button" class="notext primary" title="Send to device" onclick="put_file(); return false;"style="font-size : 20px;">
+                <!--<img src='../../media/1x1.gif' class="run icon21">-->Send
+              </button>
+			  
+			  <button hidden='ture'id="test" class="notext primary" title="get code" onclick="saveCodePy();"style="font-size : 20px;">
+                <!--<img src='../../media/1x1.gif' class="run icon21">-->Get
+              </button>
+    
+			  
+			  
+			  
+			  <button onclick="term.emit('data','\3');ws.send('import os\r\n');ws.send('os.listdir()\r\n');">Test</button>
+			  
+			  <!--<button onclick="trigger1=1;alert(data1);">data1</button>-->
+			  <button id="runButton" class="notext primary" title="..."hidden="hidden">
+                <img src='media/1x1.gif' >
+              </button>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td height="99%" colspan=2 id="content_area">
+      </td>
+    </tr>
+  </table>
+  <div id="content_blocks" class="content"style="position: absolute"></div>
+  <!--<pre id="content_javascript" class="content"></pre>-->
+  <pre id="content_python" class="content"></pre>
+  <!--<pre id="content_php" class="content"></pre>
+  <pre id="content_lua" class="content"></pre>
+  <pre id="content_dart" class="content"></pre>-->
+  <textarea id="content_xml" class="content" wrap="off"></textarea>
+  
+  <!-- WEBREPL AREA-->
+<div style="background-color: rgb(0, 0, 0);position: static;"hidden='true'id='termback'>
+<div style="display:inline-block; vertical-align:top;">
+<div id="term" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" >
+</div>
+</div>
+<div id="file-boxes" style="display:inline-block; vertical-align:Bottom;position: static; width:230px;">
+   <!--Chart---------------------------------------------------------------------->
+	<div>
+      <canvas id="canvasLine"></canvas>
+   </div>
+  <!---------------------------------------------------------------------------------------->
+  <div class="file-box"hidden="hidden">
+    <input type="file" id="put-file-select" hidden="hidden"; onchange="put_file();console.log('hihisend');">
+	<input type="file" id="importXML" hidden="hidden" onchange="importxml();console.log('hihi');">
+  </div>
+
+  <div class="file-box"hidden="hidden">
+    <input type="text" name="get_filename" id="get_filename" value="" size="13">
+    <input type="button" value="Get from device" onclick="get_file(); return false;">
+  </div>
+
+  
+
+</div>
+</div>
+<!-- WEBREPL AREA END-->
+  
+
+<xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
+  <category name="%{BKY_CATPIN}" colour="#5ba56d">
+    <block type="pin_out">
+      <field name="Pin">1</field>
+      <field name="type">out</field>
+    </block>
+    <block type="onoffpin">
+      <field name="PIN">0</field>
+      <field name="OnOff">on</field>
+    </block>
+    <block type="high_low">
+      <field name="High_Low">high</field>
+    </block>
+    <block type="input_pin">
+      <field name="PIN">0</field>
+    </block>
+    <block type="analog_input"></block>
+    <block type="pwm_setup">
+      <field name="pin">0</field>
+    </block>
+  </category>
+  <category name="Uart" colour="#a5935b">
+    <block type="uart_sender"></block>
+    <block type="uart_setup">
+      <field name="baud">9600</field>
+    </block>
+  </category>
+  <category name="Time" colour="#a55b5b">
+    <block type="delay_ms">
+      <field name="ms">1000</field>
+    </block>
+  </category>
+  <category name="WLAN" colour="#93a55b">
+    <block type="set_ap">
+      <field name="apName">Link</field>
+      <field name="apPassword">88888888</field>
+    </block>
+    <block type="set_station">
+      <field name="ssid">yourHomeSSID</field>
+      <field name="passwd">passwd</field>
+    </block>
+    <block type="enable_ap">
+      <field name="APstate">True</field>
+    </block>
+    <block type="enable_station">
+      <field name="stationState">True</field>
+    </block>
+  </category>
+  <category name="TCP" colour="#a5935b">
+    <block type="tcpsend_message">
+      <field name="tcp_message">Hello World</field>
+    </block>
+    <block type="tcpsend_setup">
+      <field name="ip_s">127.0.0.1</field>
+      <field name="port_s">10000</field>
+    </block>
+    <block type="tcpserver_setup">
+      <field name="ip_ser">0.0.0.0</field>
+      <field name="port_ser">10000</field>
+    </block>
+    <block type="tcpserver_data"></block>
+    <block type="tcpserver_send">
+      <field name="ser_message">ACK</field>
+    </block>
+  </category>
+  <category name="UDP" colour="#6d5ba5">
+    <block type="udp_server_setup">
+      <field name="udp_ser_ip">127.0.0.1</field>
+      <field name="udp_ser_port">25565</field>
+    </block>
+    <block type="udp_sender">
+      <field name="udpSendMessage">message</field>
+      <field name="udpSendIp">192.168.4.255</field>
+      <field name="udpSendPort">25565</field>
+    </block>
+    <block type="udp_get_data"></block>
+    <block type="udp__start_receive"></block>
+  </category>
+  <sep></sep>
+  <category name="Logic" colour="#5C81A6">
+    <block type="controls_if"></block>
+    <block type="logic_compare">
+      <field name="OP">EQ</field>
+    </block>
+    <block type="logic_operation">
+      <field name="OP">AND</field>
+    </block>
+    <block type="logic_negate"></block>
+    <block type="logic_boolean">
+      <field name="BOOL">TRUE</field>
+    </block>
+    <block type="logic_null"></block>
+    <block type="logic_ternary"></block>
+  </category>
+  <category name="Loops" colour="#5CA65C">
+    <block type="controls_repeat_ext">
+      <value name="TIMES">
+        <shadow type="math_number">
+          <field name="NUM">10</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="controls_whileUntil">
+      <field name="MODE">WHILE</field>
+    </block>
+    <block type="controls_for">
+      <field name="VAR" id="3QM.MmZZg8n}?F3j17{0" variabletype="">i</field>
+      <value name="FROM">
+        <shadow type="math_number">
+          <field name="NUM">1</field>
+        </shadow>
+      </value>
+      <value name="TO">
+        <shadow type="math_number">
+          <field name="NUM">10</field>
+        </shadow>
+      </value>
+      <value name="BY">
+        <shadow type="math_number">
+          <field name="NUM">1</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="controls_forEach">
+      <field name="VAR" id="l4o4IMRRDkg7=c~=%P]h" variabletype="">j</field>
+    </block>
+    <block type="controls_flow_statements">
+      <field name="FLOW">BREAK</field>
+    </block>
+  </category>
+  <category name="Math" colour="#5C68A6">
+    <block type="math_round">
+      <field name="OP">ROUND</field>
+      <value name="NUM">
+        <shadow type="math_number">
+          <field name="NUM">3.1</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="math_number">
+      <field name="NUM">0</field>
+    </block>
+    <block type="math_single">
+      <field name="OP">ROOT</field>
+      <value name="NUM">
+        <shadow type="math_number">
+          <field name="NUM">9</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="math_trig">
+      <field name="OP">SIN</field>
+      <value name="NUM">
+        <shadow type="math_number">
+          <field name="NUM">45</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="math_constant">
+      <field name="CONSTANT">PI</field>
+    </block>
+    <block type="math_number_property">
+      <mutation divisor_input="false"></mutation>
+      <field name="PROPERTY">EVEN</field>
+      <value name="NUMBER_TO_CHECK">
+        <shadow type="math_number">
+          <field name="NUM">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="math_arithmetic">
+      <field name="OP">ADD</field>
+      <value name="A">
+        <shadow type="math_number">
+          <field name="NUM">1</field>
+        </shadow>
+      </value>
+      <value name="B">
+        <shadow type="math_number">
+          <field name="NUM">1</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="math_on_list">
+      <mutation op="SUM"></mutation>
+      <field name="OP">SUM</field>
+    </block>
+    <block type="math_modulo">
+      <value name="DIVIDEND">
+        <shadow type="math_number">
+          <field name="NUM">64</field>
+        </shadow>
+      </value>
+      <value name="DIVISOR">
+        <shadow type="math_number">
+          <field name="NUM">10</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="math_constrain">
+      <value name="VALUE">
+        <shadow type="math_number">
+          <field name="NUM">50</field>
+        </shadow>
+      </value>
+      <value name="LOW">
+        <shadow type="math_number">
+          <field name="NUM">1</field>
+        </shadow>
+      </value>
+      <value name="HIGH">
+        <shadow type="math_number">
+          <field name="NUM">100</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="math_random_int">
+      <value name="FROM">
+        <shadow type="math_number">
+          <field name="NUM">1</field>
+        </shadow>
+      </value>
+      <value name="TO">
+        <shadow type="math_number">
+          <field name="NUM">100</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="math_random_float"></block>
+  </category>
+  <category name="Text" colour="#5CA68D">
+    <block type="text_charAt">
+      <mutation at="true"></mutation>
+      <field name="WHERE">FROM_START</field>
+      <value name="VALUE">
+        <block type="variables_get">
+          <field name="VAR" id="oa}eDjEeN?Y)5k]x?(.B" variabletype="">text</field>
+        </block>
+      </value>
+    </block>
+    <block type="text">
+      <field name="TEXT"></field>
+    </block>
+    <block type="text_append">
+      <field name="VAR" id="wc*F-LO=i$7%xLa~LA84" variabletype="">item</field>
+      <value name="TEXT">
+        <shadow type="text">
+          <field name="TEXT"></field>
+        </shadow>
+      </value>
+    </block>
+    <block type="text_length">
+      <value name="VALUE">
+        <shadow type="text">
+          <field name="TEXT">abc</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="text_isEmpty">
+      <value name="VALUE">
+        <shadow type="text">
+          <field name="TEXT"></field>
+        </shadow>
+      </value>
+    </block>
+    <block type="text_indexOf">
+      <field name="END">FIRST</field>
+      <value name="VALUE">
+        <block type="variables_get">
+          <field name="VAR" id="oa}eDjEeN?Y)5k]x?(.B" variabletype="">text</field>
+        </block>
+      </value>
+      <value name="FIND">
+        <shadow type="text">
+          <field name="TEXT">abc</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="text_join">
+      <mutation items="2"></mutation>
+    </block>
+    <block type="text_getSubstring">
+      <mutation at1="true" at2="true"></mutation>
+      <field name="WHERE1">FROM_START</field>
+      <field name="WHERE2">FROM_START</field>
+      <value name="STRING">
+        <block type="variables_get">
+          <field name="VAR" id="oa}eDjEeN?Y)5k]x?(.B" variabletype="">text</field>
+        </block>
+      </value>
+    </block>
+    <block type="text_changeCase">
+      <field name="CASE">UPPERCASE</field>
+      <value name="TEXT">
+        <shadow type="text">
+          <field name="TEXT">abc</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="text_trim">
+      <field name="MODE">BOTH</field>
+      <value name="TEXT">
+        <shadow type="text">
+          <field name="TEXT">abc</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="text_print">
+      <value name="TEXT">
+        <shadow type="text">
+          <field name="TEXT">abc</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="text_prompt_ext">
+      <mutation type="TEXT"></mutation>
+      <field name="TYPE">TEXT</field>
+      <value name="TEXT">
+        <shadow type="text">
+          <field name="TEXT">abc</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <category name="Lists" colour="#745CA6">
+    <block type="lists_indexOf">
+      <field name="END">FIRST</field>
+      <value name="VALUE">
+        <block type="variables_get">
+          <field name="VAR" id="g#2p80Ob-I*sz%ZxvJ.z" variabletype="">list</field>
+        </block>
+      </value>
+    </block>
+    <block type="lists_create_with">
+      <mutation items="0"></mutation>
+    </block>
+    <block type="lists_repeat">
+      <value name="NUM">
+        <shadow type="math_number">
+          <field name="NUM">5</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="lists_length"></block>
+    <block type="lists_isEmpty"></block>
+    <block type="lists_create_with">
+      <mutation items="3"></mutation>
+    </block>
+    <block type="lists_getIndex">
+      <mutation statement="false" at="true"></mutation>
+      <field name="MODE">GET</field>
+      <field name="WHERE">FROM_START</field>
+      <value name="VALUE">
+        <block type="variables_get">
+          <field name="VAR" id="g#2p80Ob-I*sz%ZxvJ.z" variabletype="">list</field>
+        </block>
+      </value>
+    </block>
+    <block type="lists_setIndex">
+      <mutation at="true"></mutation>
+      <field name="MODE">SET</field>
+      <field name="WHERE">FROM_START</field>
+      <value name="LIST">
+        <block type="variables_get">
+          <field name="VAR" id="g#2p80Ob-I*sz%ZxvJ.z" variabletype="">list</field>
+        </block>
+      </value>
+    </block>
+    <block type="lists_getSublist">
+      <mutation at1="true" at2="true"></mutation>
+      <field name="WHERE1">FROM_START</field>
+      <field name="WHERE2">FROM_START</field>
+      <value name="LIST">
+        <block type="variables_get">
+          <field name="VAR" id="g#2p80Ob-I*sz%ZxvJ.z" variabletype="">list</field>
+        </block>
+      </value>
+    </block>
+    <block type="lists_split">
+      <mutation mode="SPLIT"></mutation>
+      <field name="MODE">SPLIT</field>
+      <value name="DELIM">
+        <shadow type="text">
+          <field name="TEXT">,</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="lists_sort">
+      <field name="TYPE">NUMERIC</field>
+      <field name="DIRECTION">1</field>
+    </block>
+  </category>
+  <category name="Colour" colour="#A6745C">
+    <block type="colour_picker">
+      <field name="COLOUR">#ff0000</field>
+    </block>
+    <block type="colour_random"></block>
+    <block type="colour_rgb">
+      <value name="RED">
+        <shadow type="math_number">
+          <field name="NUM">100</field>
+        </shadow>
+      </value>
+      <value name="GREEN">
+        <shadow type="math_number">
+          <field name="NUM">50</field>
+        </shadow>
+      </value>
+      <value name="BLUE">
+        <shadow type="math_number">
+          <field name="NUM">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="colour_blend">
+      <value name="COLOUR1">
+        <shadow type="colour_picker">
+          <field name="COLOUR">#ff0000</field>
+        </shadow>
+      </value>
+      <value name="COLOUR2">
+        <shadow type="colour_picker">
+          <field name="COLOUR">#3333ff</field>
+        </shadow>
+      </value>
+      <value name="RATIO">
+        <shadow type="math_number">
+          <field name="NUM">0.5</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <sep></sep>
+  <category name="Variables" colour="#A65C81" custom="VARIABLE"></category>
+  <category name="Functions" colour="#9A5CA6" custom="PROCEDURE"></category>
+</xml>
+
+</body>
+
+<script>
+;
+
+var data1=null;
+var trigger1=null;
+var term;
+var ws;
+var connected = false;
+var binary_state = 0;
+var put_file_name = null;
+var put_file_data = null;
+var get_file_name = null;
+var get_file_data = null;
+
+function calculate_size(win) {
+    var cols = Math.max(80, Math.min(150, (win.innerWidth - 280) / 7)) | 0;
+    //var rows = Math.max(24, Math.min(80, (win.innerHeight - 180) / 12)) | 0;
+	var rows = Math.round(((win.innerHeight*0.2) / 12)-1);															
+	//return [cols,9];
+	//alert(document.getElementById('.terminal').element.style.height);
+    return [cols, rows];
+}
+
+(function() {
+    window.onload = function() {
+      var size = calculate_size(self);
+      term = new Terminal({
+        cols: size[0],
+        rows: size[1],
+        useStyle: true,
+        screenKeys: true,
+        cursorBlink: false
+      });
+      term.open(document.getElementById("term"));
+      show_https_warning();
+    };
+    window.addEventListener('resize', function() {
+        var size = calculate_size(self);
+        term.resize(size[0], size[1]);
+    });
+}).call(this);
+
+function show_https_warning() {
+    if (window.location.protocol == 'https:') {
+        var warningDiv = document.createElement('div');
+        warningDiv.style.cssText = 'background:#f99;padding:5px;margin-bottom:10px;line-height:1.5em;text-align:center';
+        warningDiv.innerHTML = [
+            'At this time, the WebREPL client cannot be accessed over HTTPS connections.',
+            'Use a HTTP connection, eg. <a href="http://micropython.org/webrepl/">http://micropython.org/webrepl/</a>.',
+            'Alternatively, download the files from <a href="https://github.com/micropython/webrepl">GitHub</a> and run them locally.'
+        ].join('<br>');
+        document.body.insertBefore(warningDiv, document.body.childNodes[0]);
+        term.resize(term.cols, term.rows - 7);
+    }
+}
+
+function button_click() {
+    if (connected) {
+        stop1();
+		
+    } else {
+        document.getElementById('url').disabled = true;
+		document.getElementById('dirsend').disabled = false;
+        document.getElementById('button').value = "Disconnect";
+        connected = true;
+        contt=connect(document.getElementById('url').value);
+    }
+}
+
+function prepare_for_connect() {
+    document.getElementById('url').disabled = false;
+    document.getElementById('button').value = "Connect";
+}
+
+function update_file_status(s) {
+    document.getElementById('file-status').innerHTML = s;
+}
+	
+/////////////////////first message to esp8266///////////////////////////////////////////////////
+function connect(url) {
+	data1=null;
+    ws = new WebSocket(url);
+    ws.binaryType = 'arraybuffer';
+    ws.onopen = function() {
+		ws.send(document.getElementById('web_pw').value+'\r');
+        term.removeAllListeners('data');
+        term.on('data', function(data) {
+            // Pasted data from clipboard will likely contain
+            // LF as EOL chars.
+            data = data.replace(/\n/g, "\r");
+            ws.send(data);
+			
+        });
+
+        term.on('title', function(title) {
+            document.title = title;
+        });
+
+        term.focus();
+        term.element.focus();
+        term.write('\x1b[31mWelcome to MicroPython!\x1b[m\r\n');
+		document.getElementById("con_status").innerHTML = "connected";
+		conStatusColor(document.getElementById("con_status"));
+
+        ws.onmessage = function(event) {
+			
+            if (event.data instanceof ArrayBuffer) {
+                var data = new Uint8Array(event.data);
+                switch (binary_state) {
+                    case 11:
+                        // first response for put
+                        if (decode_resp(data) == 0) {
+                            // send file data in chunks
+                            for (var offset = 0; offset < put_file_data.length; offset += 1024) {
+                                ws.send(put_file_data.slice(offset, offset + 1024));
+                            }
+                            binary_state = 12;
+                        }
+                        break;
+                    case 12:
+                        // final response for put
+                        if (decode_resp(data) == 0) {
+                            update_file_status('Sent ' + put_file_name + ', ' + put_file_data.length + ' bytes');
+                        } else {
+                            update_file_status('Failed sending ' + put_file_name);
+                        }
+                        binary_state = 0;
+                        break;
+
+                    case 21:
+                        // first response for get
+                        if (decode_resp(data) == 0) {
+                            binary_state = 22;
+                            var rec = new Uint8Array(1);
+                            rec[0] = 0;
+                            ws.send(rec);
+                        }
+                        break;
+                    case 22: {
+                        // file data
+                        var sz = data[0] | (data[1] << 8);
+                        if (data.length == 2 + sz) {
+                            // we assume that the data comes in single chunks
+                            if (sz == 0) {
+                                // end of file
+                                binary_state = 23;
+                            } else {
+                                // accumulate incoming data to get_file_data
+                                var new_buf = new Uint8Array(get_file_data.length + sz);
+                                new_buf.set(get_file_data);
+                                new_buf.set(data.slice(2), get_file_data.length);
+                                get_file_data = new_buf;
+                                update_file_status('Getting ' + get_file_name + ', ' + get_file_data.length + ' bytes');
+
+                                var rec = new Uint8Array(1);
+                                rec[0] = 0;
+                                ws.send(rec);
+                            }
+                        } else {
+                            binary_state = 0;
+                        }
+                        break;
+                    }
+                    case 23:
+                        // final response
+                        if (decode_resp(data) == 0) {
+                            update_file_status('Got ' + get_file_name + ', ' + get_file_data.length + ' bytes');
+                            saveAs(new Blob([get_file_data], {type: "application/octet-stream"}), get_file_name);
+                        } else {
+                            update_file_status('Failed getting ' + get_file_name);
+                        }
+                        binary_state = 0;
+                        break;
+                    case 31:
+                        // first (and last) response for GET_VER
+                        console.log('GET_VER', data);
+                        binary_state = 0;
+                        break;
+                }
+            }
+			if(trigger1){
+				data1=JSON.parse(event.data);
+				trigger1=0;
+			}
+			out();
+			//////////////////////////////////////exp
+			
+			//console.log(localStorage['get_event_data_1']);
+			//////////////////////////////////////exp end
+            //term.write(event.data.toString());
+			term.write(event.data);
+			//alert(event.data.toString());
+			
+        };
+
+    };
+
+     ws.onclose = function() {
+        connected = false;
+        if (term) {
+			ws.close()
+            term.write('\x1b[31mDisconnected\x1b[m\r\n');
+			document.getElementById('url').disabled=false;
+			document.getElementById('button').value='connect';
+			connected=false;
+			prepare_for_connect();
+			document.getElementById("con_status").innerHTML = "disconnected";
+			conStatusColor(document.getElementById("con_status"));
+        }
+        term.off('data');
+        prepare_for_connect();
+    }
+}
+
+function decode_resp(data) {
+    if (data[0] == 'W'.charCodeAt(0) && data[1] == 'B'.charCodeAt(0)) {
+        var code = data[2] | (data[3] << 8);
+        return code;
+    } else {
+        return -1;
+    }
+}
+
+function put_file() {
+    var dest_fname = put_file_name;
+    var dest_fsize = put_file_data.length;
+
+    // WEBREPL_FILE = "<2sBBQLH64s"
+    var rec = new Uint8Array(2 + 1 + 1 + 8 + 4 + 2 + 64);
+    rec[0] = 'W'.charCodeAt(0);
+    rec[1] = 'A'.charCodeAt(0);
+    rec[2] = 1; // put
+    rec[3] = 0;
+    rec[4] = 0; rec[5] = 0; rec[6] = 0; rec[7] = 0; rec[8] = 0; rec[9] = 0; rec[10] = 0; rec[11] = 0;
+    rec[12] = dest_fsize & 0xff; rec[13] = (dest_fsize >> 8) & 0xff; rec[14] = (dest_fsize >> 16) & 0xff; rec[15] = (dest_fsize >> 24) & 0xff;
+    rec[16] = dest_fname.length & 0xff; rec[17] = (dest_fname.length >> 8) & 0xff;
+    for (var i = 0; i < 64; ++i) {
+        if (i < dest_fname.length) {
+            rec[18 + i] = dest_fname.charCodeAt(i);
+        } else {
+            rec[18 + i] = 0;
+        }
+    }
+
+    // initiate put
+    binary_state = 11;
+    update_file_status('Sending ' + put_file_name + '...');
+    ws.send(rec);
+}
+
+function get_file() {
+    var src_fname = document.getElementById('get_filename').value;
+
+    // WEBREPL_FILE = "<2sBBQLH64s"
+    var rec = new Uint8Array(2 + 1 + 1 + 8 + 4 + 2 + 64);
+    rec[0] = 'W'.charCodeAt(0);
+    rec[1] = 'A'.charCodeAt(0);
+    rec[2] = 2; // get
+    rec[3] = 0;
+    rec[4] = 0; rec[5] = 0; rec[6] = 0; rec[7] = 0; rec[8] = 0; rec[9] = 0; rec[10] = 0; rec[11] = 0;
+    rec[12] = 0; rec[13] = 0; rec[14] = 0; rec[15] = 0;
+    rec[16] = src_fname.length & 0xff; rec[17] = (src_fname.length >> 8) & 0xff;
+    for (var i = 0; i < 64; ++i) {
+        if (i < src_fname.length) {
+            rec[18 + i] = src_fname.charCodeAt(i);
+        } else {
+            rec[18 + i] = 0;
+        }
+    }
+
+    // initiate get
+    binary_state = 21;
+    get_file_name = src_fname;
+    get_file_data = new Uint8Array(0);
+    update_file_status('Getting ' + get_file_name + '...');
+    ws.send(rec);
+}
+
+function get_ver() {
+    // WEBREPL_REQ_S = "<2sBBQLH64s"
+    var rec = new Uint8Array(2 + 1 + 1 + 8 + 4 + 2 + 64);
+    rec[0] = 'W'.charCodeAt(0);
+    rec[1] = 'A'.charCodeAt(0);
+    rec[2] = 3; // GET_VER
+    // rest of "rec" is zero
+
+    // initiate GET_VER
+    binary_state = 31;
+    ws.send(rec);
+}
+
+function handle_put_file_select(evt) {
+    // The event holds a FileList object which is a list of File objects,
+    // but we only support single file selection at the moment.
+    var files = evt.target.files;
+
+    // Get the file info and load its data.
+    var f = files[0];
+    put_file_name = f.name;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        put_file_data = new Uint8Array(e.target.result);
+        document.getElementById('put-file-list').innerHTML = '' + escape(put_file_name) + ' - ' + put_file_data.length + ' bytes';
+        document.getElementById('put-file-button').disabled = false;
+    };
+    reader.readAsArrayBuffer(f);
+}
+
+document.getElementById('put-file-select').addEventListener('click', function(){
+    this.value = null;
+}, false);
+
+document.getElementById('put-file-select').addEventListener('change', handle_put_file_select, false);
+document.getElementById('put-file-button').disabled = true;
+document.getElementById('dirsend').disabled = true;
+
+</script>
+<script> 
+  ;
+  function showCodePy() {
+	
+   // Generate Python code and display it.
+	var code = Blockly.Python.workspaceToCode();
+	//document.write(code);
+	alert(code);
+	}
+   function saveCodePy() {
+  //var fileName = window.prompt('What would you like to name your file?', 'main')
+  //doesn't save if the user quits the save prompt
+  var fileName = 'main'
+  if(fileName){
+    var blob = new Blob([Blockly.Python.workspaceToCode()], {type: 'text/html'});
+    saveAs(blob, 'main' + '.py');
+  }
+}
+  function get_file_namme(){
+  var file= window.prompt('What is the name of your file?', 'main.py');
+  document.getElementById('get_filename').value=file;
+  get_file(); return false;
+  }
+  
+  function send_py(){
+	
+    put_file_name = "main.py";////////////////////////////////////////////////////////////////////mind here/  send file name/////////////////////////////////////////////
+	var blob = new Blob([Blockly.Python.workspaceToCode()], {type: 'text/html'});
+	
+	var arrayBuffer;
+	var fileReader = new FileReader();
+	fileReader.onload = function() {
+		put_file_data = new Uint8Array(this.result);
+		document.getElementById('put-file-list').innerHTML = '' + escape(put_file_name) + ' - ' + put_file_data.length + ' bytes';
+        document.getElementById('put-file-button').disabled = false;
+	};
+	fileReader.readAsArrayBuffer(blob);
+	
+
+}
+	function restart1(){
+		
+		term.emit('data','\3');
+		ws.send('import machine\r\n');
+		ws.send('machine.reset()\r\n');
+		document.getElementById('url').disabled=false;
+		document.getElementById('button').value='connect';
+		connected=false;
+		setTimeout(ws.close(), 1000);
+		prepare_for_connect();
+		document.getElementById("con_status").innerHTML = "disconnected";
+		conStatusColor(document.getElementById("con_status"));
+	}
+	function stop1(){
+		document.getElementById('url').disabled=false;
+		document.getElementById('button').value='connect';
+		connected=false;
+		setTimeout(ws.close(), 1000);
+		prepare_for_connect();
+		document.getElementById("con_status").innerHTML = "disconnected";
+		conStatusColor(document.getElementById("con_status"));
+	}
+  function out(){
+	  localStorage.setItem('get_event_data_1',event.data.toString());
+	  //console.log(localStorage.getItem('get_event_data_1'));
+  }
+window.addEventListener('storage', function (e) {
+  var data2 = localStorage['get_event_data_1'];
+  console.log('2');
+  //localStorage.removeItem('get_event_data_1');
+		//alert(data11);
+		//term.write(data11);
+	
+    //alert("storage event");
+  }
+);
+
+//////////////////////import xml to workspace/////////////////////////////////
+  function importxml(){
+	console.log('hihi');
+	var workspace = Blockly.mainWorkspace;
+	var dom = Blockly.Xml.textToDom(document.getElementById('importXML').files);
+	console.log(document.getElementById('importXML'));
+	Blockly.Xml.domToWorkspace(dom, workspace);
+	console.log(readBlob(0,999999));
+	
+  }
+ 
+  function readBlob(opt_startByte, opt_stopByte) {
+
+    var files = document.getElementById('importXML').files;
+    if (!files.length) {
+      alert('Please select a file!');
+      return;
+    }
+
+    var file = files[0];
+    var start = parseInt(opt_startByte) || 0;
+    var stop = parseInt(opt_stopByte) || file.size - 1;
+    var done;
+    var reader = new FileReader();
+
+    // If we use onloadend, we need to check the readyState.
+    reader.onloadend = function(evt) {
+      if (evt.target.readyState == FileReader.DONE) { // DONE == 2
+        //console.log( evt.target.result);
+		var workspace = Blockly.mainWorkspace;
+		var dom = Blockly.Xml.textToDom(evt.target.result);
+		Blockly.Xml.domToWorkspace(dom, workspace);
+		done=evt.target.result;
+      }
+    };
+
+    var blob = file.slice(start, stop + 1);
+    reader.readAsBinaryString(blob);
+	return done;
+  }
+  function tooggle_termback() {
+    var x = document.getElementById("termback");
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+}
+</script>
+<script>
+            // y 軸的顯示
+            var yAxis= [];
+            // 資料集合，之後只要更新這個就好了。
+            var datas=[];
+            var ctx = document.getElementById('canvasLine').getContext('2d');
+            var lineChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels:yAxis,
+                datasets: [{
+                  label: 'data',
+                  data: datas,
+                  backgroundColor: "rgba(0,148,255,0.6)"
+                }]
+              }
+            });
+
+            //時間格式
+            var timeFormat = 'HH:mm:ss';
+            
+            function appendData()
+            {
+                //超過10 個，就把最早進來的刪掉
+                if(yAxis.length>30){
+                    yAxis.shift();
+                    datas.shift();
+                }
+
+                //推入y 軸新的資料 
+                yAxis.push(new moment().format(timeFormat));
+                
+                //推入一筆亂數進資料
+                datas.push(99);
+                //datas.push(Math.floor(Math.random() *100) + 1);
+                
+                //更新線圖
+                lineChart.update();
+            }
+
+            //每秒做一次
+            setInterval(appendData,500);
+			
+			
+			
+			
+  
+</script>
+<script>
+function myFunction(x) {
+    x.classList.toggle("change");
+    document.getElementById("myDropdown").classList.toggle("show");
+}
+function conStatusColor(theElement) {
+            var divcolor = theElement.style.backgroundColor;
+			var divcontent = document.getElementById("con_status").innerHTML;
+            if (divcolor == "red"&& divcontent=='connected') {
+                theElement.style.backgroundColor = '#ADFF2F';
+            } else {
+                theElement.style.backgroundColor = 'red';
+            }
+        }
+</script>
+
+
+
+</html>
